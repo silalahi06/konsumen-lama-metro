@@ -281,7 +281,7 @@
             pagination.empty();
             
             // Previous button
-            const prevBtn = $('<li>').addClass('page-item');
+            const prevBtn = $('<li>').addClass('page-item', 'flex-wrap');
             if (currentPage === 1) prevBtn.addClass('disabled');
             prevBtn.append(
                 $('<a>').addClass('page-link').attr('href', '#').html('&laquo;')
@@ -297,7 +297,7 @@
             
             // Page numbers
             for (let i = 1; i <= totalPages; i++) {
-                const pageItem = $('<li>').addClass('page-item');
+                const pageItem = $('<li>').addClass('page-item', 'flex-wrap');
                 if (i === currentPage) pageItem.addClass('active');
                 
                 pageItem.append(
@@ -312,7 +312,7 @@
             }
             
             // Next button
-            const nextBtn = $('<li>').addClass('page-item');
+            const nextBtn = $('<li>').addClass('page-item', 'flex-wrap');
             if (currentPage === totalPages) nextBtn.addClass('disabled');
             nextBtn.append(
                 $('<a>').addClass('page-link').attr('href', '#').html('&raquo;')
