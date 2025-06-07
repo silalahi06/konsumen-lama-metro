@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Table with JSON Data</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header {
+            background: linear-gradient(120deg, #4b6cb7, #182848);
+            color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border: none;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+        .card-header {
+            background: linear-gradient(to right, #4b6cb7, #3a5699);
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        .search-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        .search-container i {
+            position: absolute;
+            left: 20px;
+            top: 15px;
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+        .search-container input {
+            padding: 15px 20px 15px 55px;
+            border-radius: 12px;
+            border: 2px solid #e0e6f0;
+            font-size: 1.05rem;
+            transition: all 0.3s;
+        }
+        .search-container input:focus {
+            border-color: #4b6cb7;
+            box-shadow: 0 0 0 0.25rem rgba(75, 108, 183, 0.25);
+        }
+        .table-container {
+            overflow: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            background: white;
+        }
+        table {
+            margin-bottom: 0;
+        }
+        thead th {
+            background: #f8f9fc;
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+            padding: 15px 20px;
+            font-weight: 600;
+            color: #3a4a6e;
+            border-bottom: 2px solid #e0e6f0;
+        }
+        tbody td {
+            padding: 12px 20px;
+            vertical-align: middle;
+            border-bottom: 1px solid #edf1f7;
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .status-active {
+            background-color: #e8f7ef;
+            color: #1a7d4e;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        .status-inactive {
+            background-color: #fdf0f0;
+            color: #c94444;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(75, 108, 183, 0.03);
+        }
+        .results-info {
+            background-color: #f0f4ff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #4a5b8a;
+            margin-bottom: 20px;
+        }
+        .pagination {
+            margin-top: 20px;
+        }
+        .badge-department {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        .footer {
+            text-align: center;
+            padding: 30px 0 20px;
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+        .highlight {
+            background-color: #fff9c9;
+            font-weight: 600;
+        }
+        .department-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        .department-engineering { background-color: #e3f2fd; color: #1565c0; }
+        .department-marketing { background-color: #f3e5f5; color: #8e24aa; }
+        .department-sales { background-color: #e8f5e9; color: #2e7d32; }
+        .department-hr { background-color: #fff3e0; color: #ef6c00; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header text-center">
+            <h1><i class="fas fa-users me-3"></i>Konsumen Metro Program Lama</h1>
+            <p class="mb-0">Pencarian melalui database konsumen lama</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-table me-2"></i>Data Konsumen
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="search-container">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Cari berdasarkan nama, ktp, alamat, dll....">
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-center justify-content-end">
+                        <div class="results-info">
+                            <span id="resultsCount">0</span> data ditemukan
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nama</th>
+                                <th>Kode Konsumen</th>
+                                <th>No. KTP</th>
+                                <th>Alamat</th>
+                                <th>No. HP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <nav aria-label="Table pagination">
+                    <ul class="pagination justify-content-center" id="pagination">
+                        <!-- Pagination will be generated by JavaScript -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Direktori Konsumen | Dibuat Oleh Rajawin</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap & jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    
+        
+       <script type="text/javascript" src="metro2.json"></script>
+       <script>
+
+        // Pagination settings
+        const itemsPerPage = 10;
+        let currentPage = 1;
+        let filteredData = [];
+
+        // Initialize the table
+        $(document).ready(function() {
+            filteredData = [...employeeData];
+            renderTable();
+            setupSearch();
+        });
+
+        // Render the table with current data
+        function renderTable() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = filteredData.slice(startIndex, endIndex);
+            
+            const tableBody = $('#tableBody');
+            tableBody.empty();
+            
+            // Update results count
+            $('#resultsCount').text(filteredData.length);
+            
+            // Populate table rows
+            pageData.forEach(employee => {
+                const row = $('<tr>');
+                
+                // Format salary
+                const formattedSalary = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0
+                }).format(employee.salary);
+                
+                // Status badge
+                const statusClass = employee.status === 'active' ? 'status-active' : 'status-inactive';
+                const statusText = employee.status.charAt(0).toUpperCase() + employee.status.slice(1);
+                
+                // Department badge
+                const deptClass = `department-badge department-${employee.department.toLowerCase()}`;
+                
+                row.append(
+                    $('<td>').text(employee.id),
+                    $('<td>').html(`<strong>${employee.name}</strong>`),
+                    $('<td>').text(employee.position),
+                    $('<td>').html(`<span class="${deptClass}">${employee.department}</span>`),
+                    $('<td>').html(`<span class="text-success">${employee.salary}</span>`),
+                    $('<td>').html(`<span class="${statusClass}">${statusText}</span>`)
+                );
+                
+                tableBody.append(row);
+            });
+            
+            renderPagination();
+        }
+
+        // Render pagination controls
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const pagination = $('#pagination');
+            pagination.empty();
+            
+            // Previous button
+            const prevBtn = $('<li>').addClass('page-item');
+            if (currentPage === 1) prevBtn.addClass('disabled');
+            prevBtn.append(
+                $('<a>').addClass('page-link').attr('href', '#').html('&laquo;')
+                    .click(function(e) {
+                        e.preventDefault();
+                        if (currentPage > 1) {
+                            currentPage--;
+                            renderTable();
+                        }
+                    })
+            );
+            pagination.append(prevBtn);
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const pageItem = $('<li>').addClass('page-item');
+                if (i === currentPage) pageItem.addClass('active');
+                
+                pageItem.append(
+                    $('<a>').addClass('page-link').attr('href', '#').text(i)
+                        .click(function(e) {
+                            e.preventDefault();
+                            currentPage = i;
+                            renderTable();
+                        })
+                );
+                pagination.append(pageItem);
+            }
+            
+            // Next button
+            const nextBtn = $('<li>').addClass('page-item');
+            if (currentPage === totalPages) nextBtn.addClass('disabled');
+            nextBtn.append(
+                $('<a>').addClass('page-link').attr('href', '#').html('&raquo;')
+                    .click(function(e) {
+                        e.preventDefault();
+                        if (currentPage < totalPages) {
+                            currentPage++;
+                            renderTable();
+                        }
+                    })
+            );
+            pagination.append(nextBtn);
+        }
+
+        // Setup search functionality
+        function setupSearch() {
+            $('#searchInput').on('input', function() {
+                const searchTerm = $(this).val().toLowerCase();
+                
+                if (searchTerm === '') {
+                    filteredData = [...employeeData];
+                } else {
+                    filteredData = employeeData.filter(employee => {
+                        return (
+                            employee.name.toLowerCase().includes(searchTerm) ||
+                            employee.position.toLowerCase().includes(searchTerm) ||
+                            employee.department.toLowerCase().includes(searchTerm) ||
+                            employee.status.toLowerCase().includes(searchTerm) ||
+                            employee.id.toString().includes(searchTerm) ||
+                            employee.salary.toString().includes(searchTerm)
+                        );
+                    });
+                }
+                
+                // Reset to first page on new search
+                currentPage = 1;
+                renderTable();
+            });
+        }
+    </script>
+</body>
+</html>
+
